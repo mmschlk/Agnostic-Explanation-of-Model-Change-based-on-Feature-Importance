@@ -29,42 +29,29 @@ def run_experiment(run_id, n_stream_length, drift_position, drift_width, len_exp
     arf_model = ensemble.AdaptiveRandomForestClassifier(seed=seed_value)
     arf_explainer = changeExplainer(arf_model, "Adaptive Random Forest", len_explanation_interval, adwin_delta, tau,
                                     seed_value,feature_list)
-    #lm_model = linear_model.Perceptron()
-    #lm_explainer = changeExplainer(lm_model, "Perceptron Classifier", len_explanation_interval, adwin_delta, tau,
-    #                              seed_value, feature_list)
 
     ibl_model = neighbors.SAMKNNClassifier()
     ibl_explainer = changeExplainer(ibl_model, "SAMKNN Classifier", len_explanation_interval, adwin_delta, tau,
                                     seed_value,feature_list)
 
-#    for (n, (x,y)) in enumerate(stream):
- #       oh.learn_one(x)
-  #      if n>500:
-   #         break
 
 
     for (n, (x, y)) in enumerate(stream):
-#        x=oh.transform_one(x)
         scaler.learn_one(x)
         x=scaler.transform_one(x)
         # Prediction
         y_pred_arf = arf_model.predict_one(x)
-        #y_pred_lm = lm_model.predict_one(x)
         y_pred_ibl = ibl_model.predict_one(x)
         # Accuracy Update
         arf_accuracy.update(y, y_pred_arf)
-        #lm_accuracy.update(y,y_pred_lm)
         ibl_accuracy.update(y,y_pred_ibl)
         # Learning
         arf_model.learn_one(x, y)
-        #lm_model.learn_one(x,y)
         ibl_model.learn_one(x,y)
         # Explaining
         arf_explainer.explain_sample(x, y, y_pred_arf)
-        #lm_explainer.explain_sample(x,y,y_pred_lm)
         ibl_explainer.explain_sample(x,y,y_pred_ibl)
         arf_explainer.explanations["Total Accuracy"] = arf_accuracy.get()
-        #lm_explainer.explanations["Total Accuracy"] = lm_accuracy.get()
         ibl_explainer.explanations["Total Accuracy"] = ibl_accuracy.get()
         if n > n_stream_length:
             break
@@ -95,13 +82,9 @@ def plot_accuracy(n_stream_length, drift_position, drift_width, len_explanation_
     arf_explainer = changeExplainer(arf_model, "Adaptive Random Forest", len_explanation_interval, adwin_delta, tau,
                                     seed_value,feature_list)
 
-#    for (n, (x,y)) in enumerate(stream):
-#        oh.learn_one(x)
-#        if n>500:
-#            break
 
     for (n, (x, y)) in enumerate(stream):
- #       x=oh.transform_one(x)
+
         scaler.learn_one(x)
         x=scaler.transform_one(x)
         # Prediction
